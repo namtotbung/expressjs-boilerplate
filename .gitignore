@@ -1,0 +1,9 @@
+.env
+
+request.rest
+
+.idea/
+
+.vscode/
+
+node_modules/
