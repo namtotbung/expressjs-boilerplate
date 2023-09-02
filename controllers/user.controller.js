@@ -1,100 +1,56 @@
-const UserController = require('../models/user.model');
+const UserModel = require('../models/user.model');
 
 const getAllUsers = async (req, res) => {
 	try {
-		const customers = await UserController.find();
-		res.json(customers);
+		const users = await UserModel.find();
+		return res.status(200).json(users);
 	} catch (error) {
-		res.status(500).json({ error: 'Failed to fetch customers' });
-	}
-};
-
-const getUserByToken = async (req, res) => {
-	const customerId = req.customerId;
-	if (!customerId) {
-		return res.status(401).json({ error: 'Invalid token' });
-	}
-	try {
-		const customer = await UserController.findById(customerId);
-		if (!customer) {
-			return res.status(404).json({ error: 'UserController not found' });
-		}
-		res.json(customer);
-	} catch (error) {
-		res.status(500).json({ error: 'Failed to fetch customer' });
+		return res.status(500).json({ message: error.message });
 	}
 };
 
 const getUserById = async (req, res) => {
 	const { id } = req.params;
 	try {
-		const customer = await UserController.findById(id);
-		if (!customer) {
-			return res.status(404).json({ error: 'UserController not found' });
+		const user = await UserModel.findById(id);
+		if (!user) {
+			return res.status(404).json({ error: 'User not found' });
 		}
-		res.json(customer);
+		return res.status(200).json(user);
 	} catch (error) {
-		res.status(500).json({ error: 'Failed to fetch customer' });
+		return res.status(500).json({ message: error.message });
 	}
 };
-
-const createUser = async (req, res) => {
-	const {
-		username,
-		password,
-		firstName,
-		lastName,
-	} = req.body;
-	try {
-		const user = new UserController({
-			username,
-			firstName,
-			lastName,
-		});
-		user.hashPassword(password);
-		await user.save();
-		res.status(201).json(user);
-	} catch (error) {
-		if (error.name === 'ValidationError') {
-			return res.status(400).json({'message': error.message});
-		} else {
-			res.sendStatus(500);
-		}
-	}
-};
-
 const updateUserById = async (req, res) => {
 	const { id } = req.params;
 	const updateData = req.body;
 	try {
-		const customer = await UserController.findByIdAndUpdate(id, updateData, { new: true });
-		if (!customer) {
-			return res.status(404).json({ error: 'UserController not found' });
+		const user = await UserModel.findByIdAndUpdate(id, updateData, { new: true });
+		if (!user) {
+			return res.status(404).json({ error: 'User not found' });
 		}
-		res.json(customer);
+		return res.status(200).json(user);
 	} catch (error) {
-		res.status(500).json({ error: 'Failed to update customer' });
+		return res.status(500).json({ message: error.message });
 	}
 };
 
 const deleteUserById = async (req, res) => {
 	const { id } = req.params;
 	try {
-		const customer = await UserController.findByIdAndDelete(id);
-		if (!customer) {
-			return res.status(404).json({ error: 'UserController not found' });
+		const user = await UserModel.findByIdAndDelete(id);
+		if (!user) {
+			return res.status(404).json({ error: 'User not found' });
 		}
-		res.sendStatus(204);
+		return res.status(200).json(user);
 	} catch (error) {
-		res.status(500).json({ error: 'Failed to delete customer' });
+		return res.status(500).json({ message: error.message });
 	}
 };
 
 module.exports = {
 	getAllUsers,
-	getUserByToken,
 	getUserById,
-	createUser,
 	updateUserById,
 	deleteUserById
 };

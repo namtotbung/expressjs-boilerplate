@@ -20,11 +20,9 @@ const userSchema = new mongoose.Schema({
 	lastName: {
 		type: String,
 		required: true
-	},
-	createdAt: {
-		type: Date,
-		default: Date.now
-	},
+	}
+}, {
+	timestamps: true
 });
 
 userSchema.methods.hashPassword = function (rawPassword) {

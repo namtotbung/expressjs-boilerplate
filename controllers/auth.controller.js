@@ -1,9 +1,9 @@
 require('dotenv').config();
-const User = require('../models/user.model');
+const UserModel = require('../models/user.model');
 const jwt = require('jsonwebtoken');
 
 const generateToken = (user) => {
-	return jwt.sign({userId: user._id}, process.env.TOKEN_SECRET);
+	return jwt.sign({_id: user._id}, process.env.TOKEN_SECRET);
 };
 const register = async (req, res) => {
 	const {
@@ -13,19 +13,23 @@ const register = async (req, res) => {
 		lastName,
 	} = req.body;
 	try {
-		const user = new User({
+		const existingUser = await UserModel.findOne({ username });
+		if (existingUser) {
+			return res.status(400).json({ message: 'Username is already in use' });
+		}
+		const newUser = new UserModel({
 			username,
 			firstName,
 			lastName,
 		});
-		user.hashPassword(password);
-		await user.save();
-		res.status(201).json(user);
+		newUser.hashPassword(password);
+		await newUser.save();
+		return res.status(201).json(newUser);
 	} catch (error) {
 		if (error.name === 'ValidationError') {
-			return res.status(400).json({'message': error.message});
+			return res.status(400).json({ message: error.message });
 		} else {
-			res.sendStatus(500);
+			return res.status(500).json({ message: error.message });
 		}
 	}
 };
@@ -33,16 +37,19 @@ const register = async (req, res) => {
 const login = async (req, res) => {
 	const {username, password} = req.body;
 	try {
-		const user = await User.findOne({username});
+		if (!(username && password)) {
+			return res.status(400).json({ message: 'Missing username or password' });
+		}
+		const user = await UserModel.findOne({ username });
 		if (!user) {
-			return res.sendStatus(404);
+			return res.status(404).json({ message: 'User not found' });
 		} else if (!user.comparePassword(password)) {
-			return res.sendStatus(401);
+			return res.status(401).json({ message: 'Incorrect username or password' });
 		}
 		const token = generateToken(user);
-		res.json({token});
+		return res.status(200).json({ token });
 	} catch (error) {
-		res.sendStatus(500);
+		return res.status(500).json({ message: error.message });
 	}
 };
 
@@ -50,21 +57,18 @@ const changePassword = async (req, res) => {
 	const token = req.token;
 	const {currentPassword, newPassword} = req.body;
 	try {
-		const user = await User.findById(token.userId);
-
+		const user = await UserModel.findById(token._id);
 		if (!user) {
-			return res.sendStatus(404);
+			return res.status(404).json({ message: 'User not found' });
 		}
-
 		if (!user.comparePassword(currentPassword)) {
-			return res.sendStatus(401);
+			return res.status(401).json({ message: 'Incorrect password' });
 		}
-
 		user.hashPassword(newPassword);
 		await user.save();
-		res.sendStatus(200);
+		return res.status(200).json({ message: 'Change password successfully' });
 	} catch (error) {
-		res.sendStatus(500);
+		return res.status(500).json({ message: error.message });
 	}
 };
 
