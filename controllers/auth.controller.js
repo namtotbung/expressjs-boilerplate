@@ -18,7 +18,7 @@ const register = async (req, res) => {
 			firstName,
 			lastName,
 		});
-		user.setPassword(password);
+		user.hashPassword(password);
 		await user.save();
 		res.status(201).json(user);
 	} catch (error) {
@@ -36,7 +36,7 @@ const login = async (req, res) => {
 		const user = await User.findOne({username});
 		if (!user) {
 			return res.sendStatus(404);
-		} else if (!user.validatePassword(password)) {
+		} else if (!user.comparePassword(password)) {
 			return res.sendStatus(401);
 		}
 		const token = generateToken(user);
@@ -56,11 +56,11 @@ const changePassword = async (req, res) => {
 			return res.sendStatus(404);
 		}
 
-		if (!user.validatePassword(currentPassword)) {
+		if (!user.comparePassword(currentPassword)) {
 			return res.sendStatus(401);
 		}
 
-		user.setPassword(newPassword);
+		user.hashPassword(newPassword);
 		await user.save();
 		res.sendStatus(200);
 	} catch (error) {

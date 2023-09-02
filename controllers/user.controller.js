@@ -51,7 +51,7 @@ const createUser = async (req, res) => {
 			firstName,
 			lastName,
 		});
-		user.setPassword(password);
+		user.hashPassword(password);
 		await user.save();
 		res.status(201).json(user);
 	} catch (error) {
