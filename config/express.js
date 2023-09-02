@@ -8,8 +8,8 @@ const app = express();
 
 app.use(cors());
 app.use(morgan('dev'));
-app.use(bodyParser.urlencoded({extended: true}));
-app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true, limit: '100kb'}));
+app.use(bodyParser.json({extended: true, limit: '5mb'}));
 
 app.use('/', routes);
 
