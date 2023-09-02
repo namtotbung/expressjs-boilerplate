@@ -1,5 +1,4 @@
-const UserController = require('../models/userModel');
-const mongoose = require("mongoose");
+const UserController = require('../models/user.model');
 
 const getAllUsers = async (req, res) => {
     try {
@@ -16,7 +15,7 @@ const getUserByToken = async (req, res) => {
         return res.status(401).json({ error: 'Invalid token' });
     }
     try {
-        const customer = await UserController.findById(customerId).populate('cart.productId').populate('wishList.productId');
+        const customer = await UserController.findById(customerId);
         if (!customer) {
             return res.status(404).json({ error: 'UserController not found' });
         }
@@ -29,7 +28,7 @@ const getUserByToken = async (req, res) => {
 const getUserById = async (req, res) => {
     const { id } = req.params;
     try {
-      const customer = await UserController.findById(id).populate('cart.productId').populate('wishList.productId');
+      const customer = await UserController.findById(id);
       if (!customer) {
         return res.status(404).json({ error: 'UserController not found' });
       }

@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const User = require("../models/userModel");
+const User = require('../models/user.model');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
@@ -24,7 +24,7 @@ const register = async (req, res) => {
         res.status(201).json(user);
     } catch (error) {
         if (error.name === 'ValidationError') {
-            return res.status(400).json({"message": error.message});
+            return res.status(400).json({'message': error.message});
         } else {
             res.sendStatus(500);
         }
