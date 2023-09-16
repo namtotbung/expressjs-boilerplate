@@ -7,3 +7,5 @@ request.rest
 .vscode/
 
 node_modules/
+
+dist/

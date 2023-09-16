@@ -1,8 +1,7 @@
-const app = require('./config/express');
-const mongoose = require('./config/mongoose');
+import app from './config/express';
+import { start } from './config/mongoose';
 
 const PORT = process.env.PORT || 3000;
 
-mongoose.start();
-
+start();
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
