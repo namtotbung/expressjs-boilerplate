@@ -19,34 +19,37 @@ interface UserMethods {
 
 type UserModel = Model<User, {}, UserMethods>;
 
-const schema = new Schema<User, UserModel, UserMethods>({
-	username: {
-		type: String,
-		required: true,
-		unique: true,
-		minlength: 6,
-		maxlength: 30
+const schema = new Schema<User, UserModel, UserMethods>(
+	{
+		username: {
+			type: String,
+			required: true,
+			unique: true,
+			minlength: 6,
+			maxlength: 30
+		},
+		password: {
+			type: String,
+			required: true
+		},
+		firstName: {
+			type: String,
+			required: true
+		},
+		lastName: {
+			type: String,
+			required: true
+		}
 	},
-	password: {
-		type: String,
-		required: true
-	},
-	firstName: {
-		type: String,
-		required: true
-	},
-	lastName: {
-		type: String,
-		required: true
+	{
+		timestamps: true
 	}
-}, {
-	timestamps: true
-});
+);
 
 schema.method('fullName', function fullName() {
 	return this.firstName + ' ' + this.lastName;
 });
-schema.method( 'hashPassword', function hashPassword(rawPassword: string) {
+schema.method('hashPassword', function hashPassword(rawPassword: string) {
 	const saltRounds = 10;
 	this.password = bcrypt.hash(rawPassword, saltRounds);
 });

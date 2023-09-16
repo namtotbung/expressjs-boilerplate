@@ -1,10 +1,10 @@
 import { Request } from 'express';
-import {Payload} from '../payload';
+import { Payload } from '../payload';
 
 export interface AuthorizedRequest extends Request {
-    payload: Payload;
+	payload: Payload;
 }
 
 export interface TypedBodyRequest<T> extends AuthorizedRequest {
-    body: T
+	body: T;
 }
