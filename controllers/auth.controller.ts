@@ -20,15 +20,11 @@ const register = async (req: TypedBodyRequest<RegisterBody>, res: Response) => {
 			firstName,
 			lastName
 		});
-		newUser.hashPassword(password);
+		await newUser.hashPassword(password);
 		await newUser.save();
 		return res.status(201).json(newUser);
-	} catch (error: any) {
-		if (error.name === 'ValidationError') {
-			return res.status(400).json({ message: error.message });
-		} else {
-			return res.status(500).json({ message: error.message });
-		}
+	} catch (error) {
+		return res.status(500).json(error);
 	}
 };
 
@@ -46,8 +42,8 @@ const login = async (req: TypedBodyRequest<LoginBody>, res: Response) => {
 		}
 		const token = generateToken(user);
 		return res.status(200).json({ token });
-	} catch (error: any) {
-		return res.status(500).json({ message: error.message });
+	} catch (error) {
+		return res.status(500).json(error);
 	}
 };
 
@@ -65,8 +61,8 @@ const changePassword = async (req: TypedBodyRequest<ChangePasswordBody>, res: Re
 		user.hashPassword(newPassword);
 		await user.save();
 		return res.status(200).json({ message: 'Change password successfully' });
-	} catch (error: any) {
-		return res.status(500).json({ message: error.message });
+	} catch (error) {
+		return res.status(500).json(error);
 	}
 };
 

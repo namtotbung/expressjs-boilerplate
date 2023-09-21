@@ -49,9 +49,9 @@ const schema = new Schema<User, UserModel, UserMethods>(
 schema.method('fullName', function fullName() {
 	return this.firstName + ' ' + this.lastName;
 });
-schema.method('hashPassword', function hashPassword(rawPassword: string) {
+schema.method('hashPassword', async function hashPassword(rawPassword: string) {
 	const saltRounds = 10;
-	this.password = bcrypt.hash(rawPassword, saltRounds);
+	this.password = await bcrypt.hash(rawPassword, saltRounds);
 });
 
 schema.method('comparePassword', function comparePassword(plainTextPassword: string) {
